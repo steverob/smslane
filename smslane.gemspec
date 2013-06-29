@@ -7,10 +7,10 @@ Gem::Specification.new do |spec|
   spec.name          = "smslane"
   spec.version       = Smslane::VERSION
   spec.authors       = ["Steve Robinson"]
-  spec.email         = ["stevanity.hf@gmail.com"]
+  spec.email         = ["steve.rob@me.com"]
   spec.description   = %q{Wrapper gem for the Smslane.com HTTP API}
   spec.summary       = %q{A simple to use gem that enables developers to integrate Smslane.com's HTTP API with their applications and access the Bulk SMS service. Balance Check, Multiple recipient and delivery report features are all supported.}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/steverob/smslane"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
