@@ -44,7 +44,7 @@ module Smslane
     def send_sms recipients, message, flash
       flash = flash ? 1 : 0
       responses = []
-      recipients = recipients.each_slice(5).to_a
+      recipients = recipients.each_slice(90).to_a
       recipients.each do |recipient_list|
         recipient_list.each_with_index do |number,i|
           recipient_list[i] = '91'+number[-10..-1]
