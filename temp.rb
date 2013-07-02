@@ -1,5 +1,5 @@
 require "httparty"
-require 'webmock'
+#require 'webmock'
 require 'cgi'
 require 'securerandom'
 
@@ -7,24 +7,24 @@ require 'securerandom'
 
 class Client
     include HTTParty
-    include WebMock::API
+    #include WebMock::API
     debug_output $stderr
     base_uri  'http://smslane.com'
 
-    stub_request(:get, "http://smslane.com/vendorsms/CheckBalance.aspx?password=karimbenzema&user=steverob").to_return(:body => "Success#20000", :status => 200, :headers => { 'Content-Length' => 13 })
-    stub_request(:get, /http:\/\/smslane\.com\/vendorsms\/pushsms\.aspx?/).to_return(:body => lambda { |request| 
-      nums = CGI::parse(request.uri.query)['msisdn'][0].split(',')
-      response = ''
-      nums.each do |num|
-        if !(/^(\+91|91)[789][0-9]{9}$/.match(num).nil?)
-          response += 'The Message Id : ' + num + '-' + SecureRandom.hex + '<br />'
-        else
-          response = 'Failed#Invalid Mobile Numbers'
-          break
-        end
-      end
-      response 
-    })
+    # stub_request(:get, "http://smslane.com/vendorsms/CheckBalance.aspx?password=karimbenzema&user=steverob").to_return(:body => "Success#20000", :status => 200, :headers => { 'Content-Length' => 13 })
+    # stub_request(:get, /http:\/\/smslane\.com\/vendorsms\/pushsms\.aspx?/).to_return(:body => lambda { |request| 
+    #   nums = CGI::parse(request.uri.query)['msisdn'][0].split(',')
+    #   response = ''
+    #   nums.each do |num|
+    #     if !(/^(\+91|91)[789][0-9]{9}$/.match(num).nil?)
+    #       response += 'The Message Id : ' + num + '-' + SecureRandom.hex + '<br />'
+    #     else
+    #       response = 'Failed#Invalid Mobile Numbers'
+    #       break
+    #     end
+    #   end
+    #   response 
+    # })
     
 
     def initialize(username,password)
@@ -67,4 +67,22 @@ class Client
       result
     end
 
+    def delivery_report number, unique_id
+      options = {:query => @auth.merge({:MessageID => number+'-'+unique_id}) }
+      response = self.class.get '/vendorsms/CheckDelivery.aspx?', options
+      case response.code
+        when 200 
+          response.gsub('#','')
+        when 404
+          'Page Not Found'
+        when 500
+          'Server Error'
+        when 500..600
+          'HTTP Error #{response.code}'
+      end
+    end
+
 end
+
+client = Client.new('steverob','karimbenzema')
+puts client.delivery_report('919791133336','b30f9de2dc237534a10bef883636568c')

@@ -66,6 +66,21 @@ module Smslane
       result
     end
 
+    def delivery_report number, unique_id
+      options = {:query => @auth.merge({:MessageID => number+'-'+unique_id}) }
+      response = self.class.get '/vendorsms/CheckDelivery.aspx?', options
+      case response.code
+        when 200 
+          response.gsub('#','')
+        when 404
+          'Page Not Found'
+        when 500
+          'Server Error'
+        when 500..600
+          'HTTP Error #{response.code}'
+      end
+    end
+
   end
 
 
